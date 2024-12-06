@@ -17,6 +17,7 @@ namespace DAL.Entity
         public string Password { get; set; }
         public string AdditionalQuestion { get; set; }
         public User(){  }
+
         public User(string name, string lastname, DateOnly birthday, string email, string password, string additionalquestion) 
         {
             this.Id = Guid.NewGuid();
