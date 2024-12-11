@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BLL.Features.MediaTR
+namespace BLL.Features.Heshing
 {
-    public class Class1
+    public interface IHeshing
     {
+        string Hash(string password);
     }
 }

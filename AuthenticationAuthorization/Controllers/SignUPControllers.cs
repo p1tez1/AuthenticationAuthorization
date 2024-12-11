@@ -1,4 +1,7 @@
-﻿using BLL.Services;
+﻿using BLL.Features.Heshing;
+using BLL.Features.Users.RegistUser;
+using BLL.Services;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography.Xml;
 
@@ -8,23 +11,28 @@ namespace AuthenticationAuthorization.Controllers
     [Route("api/[Controller]")]
     public class UserControllers : ControllerBase
     {
-        private readonly SignUpServices _signupservices;
-        public UserControllers(SignUpServices signupservices)
+        private readonly IHeshing _heshing;
+        private readonly ISender _sender;
+
+        public UserControllers(ISender sender, IHeshing heshing)
         {
-            _signupservices = signupservices;
+            _sender = sender;
+            _heshing = heshing; 
         }
 
         [HttpPost("SignUp")]
-        public ActionResult EnterData(string name, string lastname, string birthdaystr, string email,string password, string verpassword, string additionalquestion)
+        public async Task<ActionResult> EnterData(string name, string lastname, string birthdaystr, string email,string password, string verpassword, string additionalquestion)
         {
             if(password != verpassword)
             {
                 throw new Exception("You write not simular second verification password");
             }
+            
+            password = _heshing.Hash(password);
+            var comand = new RegistUserComand(name,lastname,birthdaystr,email,password,additionalquestion);
+            bool result = await _sender.Send(comand);
 
-            _signupservices.EnterData(name, lastname, birthdaystr, email, password, additionalquestion);
-
-            return Ok(true);
+            return Ok(result);
         }
     }
 }

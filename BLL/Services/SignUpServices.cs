@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace BLL.Services
 {
-    public class SignUpServices
+    public class SignUpServices : ISignUpServices
     {
         private readonly UserContext _context;
 
@@ -18,13 +18,16 @@ namespace BLL.Services
             _context = context;
         }
 
-         public bool EnterData(string name, string lastname, string birthdaystr, string email, string password, string additionalquestion)
-         {
+        public async Task<bool> EnterData(string name, string lastname, string birthdaystr, string email, string password, string additionalquestion)
+        {
             DateOnly birthday = DateOnly.Parse(birthdaystr);
+
             User user = new User(name,lastname,birthday,email,password,additionalquestion);
-            _context.Users.AddAsync(user);
-            _context.SaveChanges();
+
+            await _context.Users.AddAsync(user);
+            await _context.SaveChangesAsync();
+
             return true;
-         }
+        }
     }
 }
